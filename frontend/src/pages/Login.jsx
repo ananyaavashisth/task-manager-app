@@ -22,7 +22,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md border border-gray-200">
-        <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-900 tracking-tight">Login to Ethara</h2>
+        <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-900 tracking-tight">Login to Taskflow</h2>
         {error && <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded mb-4 text-sm">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
