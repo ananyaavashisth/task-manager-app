@@ -3,10 +3,10 @@
 A robust, full-stack application built for team collaboration and task management.
 
 ## Live Demo
-- **App URL**: [Insert Railway Frontend URL Here]
+- **App URL**: https://exemplary-vision-production.up.railway.app
 - **Test Credentials**: 
-  - Admin: `admin@ethara.com` / `Admin@123`
-  - Member: `member1@ethara.com` / `Member@123`
+  - Admin: `admin@test.com` / `Admin@123`
+  - Member: `member@test.com` / `Member@123`
 
 ## Tech Stack
 **Frontend:**
@@ -33,8 +33,8 @@ A robust, full-stack application built for team collaboration and task managemen
 
 ### 1. Clone & Database
 ```bash
-git clone https://github.com/your-username/ethara-task-manager.git
-cd ethara-task-manager
+git clone https://github.com/ananyaavashisth/task-manager-app.git
+cd task-manager-app
 ```
 Ensure you have PostgreSQL running locally, or use a cloud database URL.
 
