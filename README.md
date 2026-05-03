@@ -5,8 +5,8 @@ A robust, full-stack application built for team collaboration and task managemen
 ## Live Demo
 - **App URL**: https://exemplary-vision-production.up.railway.app
 - **Test Credentials**: 
-  - Admin: `admin@test.com` / `Admin@123`
-  - Member: `member@test.com` / `Member@123`
+  - Admin: `alex@taskflow.com` / `Alex@123`
+  - Member: `sarah@taskflow.com` / `Sarah@123`
 
 ## Tech Stack
 **Frontend:**
