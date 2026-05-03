@@ -1,131 +1,152 @@
+require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding data...');
+  console.log('Deleting existing data...');
+  await prisma.task.deleteMany();
+  await prisma.projectMember.deleteMany();
+  await prisma.project.deleteMany();
+  await prisma.user.deleteMany();
 
-  // Create users
-  const adminPassword = await bcrypt.hash('Admin@123', 10);
-  const memberPassword = await bcrypt.hash('Member@123', 10);
-
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@ethara.com' },
-    update: {},
-    create: {
-      name: 'Admin User',
-      email: 'admin@ethara.com',
-      password: adminPassword,
+  console.log('Creating users...');
+  const saltRounds = 10;
+  
+  const alexPassword = await bcrypt.hash('Alex@123', saltRounds);
+  const alex = await prisma.user.create({
+    data: {
+      name: 'Alex Morgan',
+      email: 'alex@taskflow.com',
+      password: alexPassword,
       role: 'ADMIN',
     },
   });
 
-  const member1 = await prisma.user.upsert({
-    where: { email: 'member1@ethara.com' },
-    update: {},
-    create: {
-      name: 'John Member',
-      email: 'member1@ethara.com',
-      password: memberPassword,
-      role: 'MEMBER',
-    },
-  });
-
-  const member2 = await prisma.user.upsert({
-    where: { email: 'member2@ethara.com' },
-    update: {},
-    create: {
-      name: 'Jane Member',
-      email: 'member2@ethara.com',
-      password: memberPassword,
-      role: 'MEMBER',
-    },
-  });
-
-  // Create project
-  const project = await prisma.project.create({
+  const sarahPassword = await bcrypt.hash('Sarah@123', saltRounds);
+  const sarah = await prisma.user.create({
     data: {
-      name: 'Alpha Product Launch',
-      description: 'The upcoming MVP launch for the main product line.',
+      name: 'Sarah Chen',
+      email: 'sarah@taskflow.com',
+      password: sarahPassword,
+      role: 'MEMBER',
+    },
+  });
+
+  const rajPassword = await bcrypt.hash('Raj@123', saltRounds);
+  const raj = await prisma.user.create({
+    data: {
+      name: 'Raj Patel',
+      email: 'raj@taskflow.com',
+      password: rajPassword,
+      role: 'MEMBER',
+    },
+  });
+
+  console.log('Creating projects and members...');
+  
+  const project1 = await prisma.project.create({
+    data: {
+      name: 'Mobile App Redesign',
+      description: 'Redesigning the mobile experience for Q2 launch',
       members: {
         create: [
-          { userId: admin.id, role: 'ADMIN' },
-          { userId: member1.id, role: 'MEMBER' },
-          { userId: member2.id, role: 'MEMBER' },
+          { userId: alex.id, role: 'ADMIN' },
+          { userId: sarah.id, role: 'MEMBER' },
+          { userId: raj.id, role: 'MEMBER' },
         ],
       },
     },
   });
 
-  // Create tasks
-  const tasks = [
-    {
-      title: 'Design landing page',
-      description: 'Create high-fidelity mockups for the new landing page.',
-      status: 'DONE',
-      priority: 'HIGH',
-      projectId: project.id,
-      assigneeId: member1.id,
-      creatorId: admin.id,
-      dueDate: new Date(new Date().setDate(new Date().getDate() - 2)),
+  const project2 = await prisma.project.create({
+    data: {
+      name: 'Backend Infrastructure',
+      description: 'Upgrading server architecture and API performance',
+      members: {
+        create: [
+          { userId: alex.id, role: 'ADMIN' },
+          { userId: sarah.id, role: 'MEMBER' },
+          { userId: raj.id, role: 'MEMBER' },
+        ],
+      },
     },
-    {
-      title: 'Setup PostgreSQL Database',
-      description: 'Provision database on Railway and configure Prisma.',
-      status: 'DONE',
-      priority: 'HIGH',
-      projectId: project.id,
-      assigneeId: admin.id,
-      creatorId: admin.id,
-    },
-    {
-      title: 'Implement Auth API',
-      description: 'Build JWT signup, login, and middleware.',
-      status: 'IN_PROGRESS',
-      priority: 'HIGH',
-      projectId: project.id,
-      assigneeId: member2.id,
-      creatorId: admin.id,
-      dueDate: new Date(new Date().setDate(new Date().getDate() + 2)),
-    },
-    {
-      title: 'Create Dashboard UI',
-      description: 'Build the React dashboard with stat cards and lists.',
-      status: 'TODO',
-      priority: 'MEDIUM',
-      projectId: project.id,
-      assigneeId: member1.id,
-      creatorId: admin.id,
-      dueDate: new Date(new Date().setDate(new Date().getDate() + 5)),
-    },
-    {
-      title: 'Write project README',
-      description: 'Document architecture, tech stack, and API endpoints.',
-      status: 'TODO',
-      priority: 'LOW',
-      projectId: project.id,
-      assigneeId: null,
-      creatorId: admin.id,
-      dueDate: new Date(new Date().setDate(new Date().getDate() + 10)),
-    },
-    {
-      title: 'Overdue task example',
-      description: 'This task is intentionally overdue to test the dashboard feature.',
-      status: 'TODO',
-      priority: 'MEDIUM',
-      projectId: project.id,
-      assigneeId: member2.id,
-      creatorId: admin.id,
-      dueDate: new Date(new Date().setDate(new Date().getDate() - 5)),
-    },
-  ];
+  });
 
-  for (const t of tasks) {
-    await prisma.task.create({ data: t });
-  }
+  console.log('Creating tasks...');
 
-  console.log('Seeding completed successfully!');
+  await prisma.task.createMany({
+    data: [
+      // Project 1 Tasks
+      {
+        title: 'Design new onboarding flow',
+        status: 'IN_PROGRESS',
+        priority: 'HIGH',
+        dueDate: new Date('2026-05-10T00:00:00Z'),
+        projectId: project1.id,
+        assigneeId: sarah.id,
+        creatorId: alex.id,
+      },
+      {
+        title: 'Update color system',
+        status: 'TODO',
+        priority: 'MEDIUM',
+        dueDate: new Date('2026-05-15T00:00:00Z'),
+        projectId: project1.id,
+        assigneeId: raj.id,
+        creatorId: alex.id,
+      },
+      {
+        title: 'Fix login screen bug',
+        status: 'DONE',
+        priority: 'HIGH',
+        dueDate: new Date('2026-05-05T00:00:00Z'),
+        projectId: project1.id,
+        assigneeId: sarah.id,
+        creatorId: alex.id,
+      },
+      {
+        title: 'Write UI documentation',
+        status: 'TODO',
+        priority: 'LOW',
+        dueDate: new Date('2026-05-20T00:00:00Z'),
+        projectId: project1.id,
+        assigneeId: raj.id,
+        creatorId: alex.id,
+      },
+      // Project 2 Tasks
+      {
+        title: 'Migrate to PostgreSQL v15',
+        status: 'DONE',
+        priority: 'HIGH',
+        dueDate: new Date('2026-05-03T00:00:00Z'),
+        projectId: project2.id,
+        assigneeId: raj.id,
+        creatorId: alex.id,
+      },
+      {
+        title: 'Set up Redis caching',
+        status: 'IN_PROGRESS',
+        priority: 'HIGH',
+        dueDate: new Date('2026-05-12T00:00:00Z'),
+        projectId: project2.id,
+        assigneeId: sarah.id,
+        creatorId: alex.id,
+      },
+      {
+        title: 'API rate limiting',
+        status: 'TODO',
+        priority: 'MEDIUM',
+        dueDate: new Date('2026-05-18T00:00:00Z'),
+        projectId: project2.id,
+        assigneeId: raj.id,
+        creatorId: alex.id,
+      },
+    ],
+  });
+
+  console.log('Seeding finished successfully!');
 }
 
 main()
